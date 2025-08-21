@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RANK BOOSTER FOR JEE MAINS</title>
+  <style>
+    /* ====== Base / Layout ====== */
+    :root{
+      --primary:#1976d2; /* blue */
+      --secondary:#d81b60; /* pink */
+      --accent:#64b5f6; /* light-blue */
+      --card:#ffffff;
+      --bg-grad:linear-gradient(135deg,#e3f2fd,#fce4ec);
+      --text:#1f2937;
+      --muted:#6b7280;
+      --success:#22c55e;
+      --warn:#ef4444;
+      --shadow:0 10px 24px rgba(0,0,0,.12)
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:"Poppins",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--text);
+      background:var(--bg-grad);
+      display:flex;align-items:center;justify-content:center;
+      padding:24px;
+    }
+    .screen{width:min(980px,100%);background:var(--card);border-radius:20px;box-shadow:var(--shadow);padding:28px;animation:fadeIn .6s ease}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+    .brand{font-size:24px;font-weight:800;letter-spacing:.5px;background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .sub{color:var(--muted);font-weight:600}
+    .hidden{display:none !important}
+
+    /* Buttons / inputs */
+    .btn{appearance:none;border:none;border-radius:999px;padding:12px 20px;font-weight:700;cursor:pointer;background:linear-gradient(90deg,var(--primary),var(--accent));color:#fff;box-shadow:0 6px 14px rgba(25,118,210,.25);transition:transform .15s ease,filter .15s ease}
+    .btn:hover{transform:translateY(-1px)}
+    .btn.gray{background:linear-gradient(90deg,#6b7280,#9ca3af);box-shadow:0 6px 14px rgba(107,114,128,.2)}
+    .btn.outline{background:#fff;color:var(--primary);border:2px solid var(--primary);box-shadow:none}
+    .grid{display:grid;gap:14px}
+    .grid.subjects{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+    .grid.chapters{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+    .chip{padding:12px 16px;border-radius:14px;border:2px solid var(--primary);color:var(--primary);font-weight:700;background:#fff;cursor:pointer;transition:.15s}
+    .chip:hover{background:var(--primary);color:#fff}
+    .muted{color:var(--muted)}
+
+    /* Card / Question styling */
+    .card{background:#fff;border-radius:16px;box-shadow:0 8px 20px rgba(0,0,0,.08);padding:18px}
+    .q-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+    .badge{background:linear-gradient(90deg,var(--primary),var(--secondary));color:#fff;font-size:12px;padding:6px 10px;border-radius:999px;font-weight:800;letter-spacing:.5px}
+    .q-text{font-size:18px;font-weight:700}
+
+    .options{margin-top:10px}
+    .opt{position:relative;margin:10px 0}
+    .opt input{display:none}
+    .opt label{display:block;padding:12px 14px;border-radius:12px;background:#f8fafc;border:2px solid transparent;cursor:pointer;transition:.2s;font-weight:600}
+    .opt label:hover{background:#eef2f7}
+    .opt input:checked + label{background:#e3f2fd;border-color:var(--primary);color:var(--primary);box-shadow:0 0 0 2px rgba(25,118,210,.15) inset}
+
+    /* Quiz layout */
+    .quiz-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0 18px}
+    .timer{background:var(--primary);color:#fff;border-radius:12px;padding:10px 14px;font-weight:800;letter-spacing:.5px;box-shadow:0 4px 10px rgba(25,118,210,.25)}
+    .progress{flex:1;height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden}
+    .progress > span{display:block;height:100%;background:linear-gradient(90deg,var(--secondary),var(--primary));width:0%}
+    .nav{display:flex;gap:8px;flex-wrap:wrap}
+    .nav .dot{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800;border:2px solid #cbd5e1;color:#475569;background:#fff;cursor:pointer}
+    .nav .dot.active{border-color:var(--primary);color:#fff;background:var(--primary)}
+    .nav .dot.answered{border-color:#10b981;color:#10b981;background:#ecfdf5}
+
+    /* Leaderboard */
+    table{width:100%;border-collapse:collapse;margin-top:10px}
+    th,td{padding:12px 10px;text-align:center;border-bottom:1px solid #e5e7eb}
+    th{background:var(--primary);color:#fff;text-transform:uppercase;letter-spacing:.5px}
+    tr:nth-child(even){background:#f9fafb}
+    tr:hover{background:#f3f4f6}
+    .me{background:#dcfce7 !important;font-weight:800}
+    .medal{font-size:18px}
+
+    /* Animations */
+    @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+  </style>
+</head>
+<body>
+  <div class="screen">
+    <header>
+      <div>
+        <div class="brand">RANK BOOSTER FOR JEE MAINS </div>
+		<div class="brand">            (DESIGN BY MANISH SARASWAT )</div>
+        <div class="sub" id="subtitle">Ace your prep with PYQs, timer & leaderboards</div>
+      </div>
+      <div>
+        <button class="btn gray hidden" id="logoutBtn" onclick="logout()">Logout</button>
+      </div>
+    </header>
+
+    <!-- ===== Login Page ===== -->
+    <section id="loginPage">
+      <div class="card" style="text-align:center">
+        <h2 style="margin:6px 0 0">Welcome 👋</h2>
+        <p class="muted">Enter your name once to start</p>
+        <input id="username" placeholder="Your full name" style="width:100%;padding:14px 16px;border-radius:12px;border:2px solid #e5e7eb;outline:none;font-weight:600" onkeydown="if(event.key==='Enter') login()" />
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:12px">
+          <button class="btn" onclick="login()">Continue</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Subject Page ===== -->
+    <section id="subjectPage" class="hidden">
+      <div class="card" style="margin-bottom:14px">
+        <h2 style="margin:6px 0">Hi <span id="displayName"></span> 👋</h2>
+        <p class="muted">Choose a subject</p>
+        <div class="grid subjects" style="margin-top:10px">
+          <button class="chip" onclick="chooseSubject('Physics')">Physics</button>
+          <button class="chip" onclick="chooseSubject('Chemistry')">Chemistry</button>
+          <button class="chip" onclick="chooseSubject('Maths')">Maths</button>
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-top:14px">
+          <button class="btn gray" onclick="goTo('loginPage')">⬅ Back</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Chapter Page ===== -->
+    <section id="chapterPage" class="hidden">
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+          <div>
+            <div class="badge" id="subjectBadge">SUBJECT</div>
+            <h2 id="chapterHeading" style="margin:8px 0 0">Chapters</h2>
+            <p class="muted" style="margin:6px 0 0">Class 11 & 12 chapters</p>
+          </div>
+          <div><button class="btn gray" onclick="goTo('subjectPage')">⬅ Back</button></div>
+        </div>
+        <div id="chapters" class="grid chapters" style="margin-top:14px"></div>
+      </div>
+    </section>
+
+    <!-- ===== Test Page ===== -->
+    <section id="testPage" class="hidden">
+      <div class="quiz-bar">
+        <div class="timer" id="timer">10:00</div>
+        <div class="progress" aria-label="Progress"><span id="progressFill"></span></div>
+        <div class="nav" id="qDots"></div>
+      </div>
+
+      <div id="qCard" class="card" style="min-height:140px"></div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px">
+        <button class="btn gray" onclick="prevQ()">⟵ Previous</button>
+        <div style="display:flex;gap:8px">
+          <button class="btn outline" onclick="saveAndNext()">Save & Next ⟶</button>
+          <button class="btn" onclick="submitTest()">Submit Test</button>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-start;margin-top:10px">
+        <button class="btn gray" onclick="cancelTest()">⬅ Back to Chapters</button>
+      </div>
+    </section>
+
+    <!-- ===== Result / Leaderboard Page ===== -->
+    <section id="resultPage" class="hidden">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+          <div>
+            <div class="badge" id="resultBadge">RESULT</div>
+            <h2 id="resultTitle" style="margin:8px 0 0">Your Score</h2>
+            <p class="muted" id="rankLine"></p>
+          </div>
+          <div><button class="btn gray" onclick="goBackToChapters()">⬅ Back</button></div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <table id="leaderboardTbl">
+            <thead>
+              <tr><th>Rank</th><th>Name</th><th>Score</th><th>Time (mm:ss)</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // ======= App State =======
+    const $ = (id)=>document.getElementById(id);
+    let currentUser = localStorage.getItem('rbjm_user') || '';
+    let currentSubject = '';
+    let currentChapter = '';
+    let timer = 600; // 10 minutes in seconds
+    let tick = null;
+    let startedAt = null;
+
+    // Sample Chapter Map (short list; add more as needed)
+    const Chapters = {
+      Physics:[
+        'Motion in Straight Line','Laws of Motion','Work, Energy & Power','Rotational Motion','Gravitation'
+      ],
+      Chemistry:[
+        'Mole Concept','Atomic Structure','Chemical Bonding','Thermodynamics','Equilibrium'
+      ],
+      Maths:[
+        'Straight Lines','Quadratic Equations','Sequence & Series','Limits & Continuity','Vectors'
+      ]
+    };
+
+    // ======= Questions DB (sample) =======
+    // Structure: Questions[Subject][Chapter] = [ {q, opts:[..], ans:index}, ... ]
+    const Questions = {
+      Physics:{
+        'Motion in Straight Line':[
+          {q:'Displacement is a ____ quantity.',opts:['Scalar','Vector','Tensor','Pseudo-vector'],ans:1},
+          {q:'x(t)=t^2+2t. Velocity at t=3s ?',opts:['6 m/s','8 m/s','10 m/s','12 m/s'],ans:3},
+          {q:'Area under v–t graph represents',opts:['Acceleration','Jerk','Displacement','Speed'],ans:2}
+        ],
+        'Laws of Motion':[
+          {q:'Newton\'s 3rd law implies forces act as',opts:['Action only','Reaction only','Action–reaction pair','No relation'],ans:2},
+          {q:'F=ma. Unit of force in SI is',opts:['dyne','newton','kgf','joule'],ans:1},
+          {q:'Friction is a ____ force.',opts:['Contact','Non-contact','Nuclear','Electrostatic'],ans:0}
+        ]
+      },
+      Chemistry:{
+        'Mole Concept':[
+          {q:'1 mole contains ~ ____ entities.',opts:['6.022×10^23','3.14×10^7','10^12','10^23'],ans:0},
+          {q:'Molar mass of H2O is',opts:['16 g/mol','18 g/mol','20 g/mol','1 g/mol'],ans:1},
+          {q:'% composition of O in H2O (by mass) ≈',opts:['11%','33%','50%','89%'],ans:3}
+        ]
+      },
+      Maths:{
+        'Straight Lines':[
+          {q:'Slope of y=2x+3 is',opts:['-2','0','2','3'],ans:2},
+          {q:'Distance between (0,0) and (3,4) is',opts:['3','4','5','7'],ans:2},
+          {q:'Equation of x-axis is',opts:['x=0','y=0','x=y','x+y=0'],ans:1}
+        ]
+      }
+    };
+
+    // ======= Navigation helpers =======
+    function goTo(id){ document.querySelectorAll('section').forEach(s=>s.classList.add('hidden')); $(id).classList.remove('hidden'); }
+
+    function logout(){ localStorage.removeItem('rbjm_user'); currentUser=''; goTo('loginPage'); $('logoutBtn').classList.add('hidden'); $('subtitle').textContent='Ace your prep with PYQs, timer & leaderboards'; }
+
+    // Init
+    window.addEventListener('load',()=>{
+      if(currentUser){ $('displayName').textContent=currentUser; $('logoutBtn').classList.remove('hidden'); goTo('subjectPage'); $('subtitle').textContent=`Welcome back, ${currentUser}!`; }
+    });
+
+    // ======= Login =======
+    function login(){
+      const name = $('username').value.trim();
+      if(!name){ alert('Please enter your name'); return; }
+      currentUser = name;
+      localStorage.setItem('rbjm_user', name);
+      $('displayName').textContent = name;
+      $('logoutBtn').classList.remove('hidden');
+      $('subtitle').textContent = `All the best, ${name}!`;
+      goTo('subjectPage');
+    }
+
+    // ======= Subject -> Chapters =======
+    function chooseSubject(sub){
+      currentSubject=sub;
+      $('subjectBadge').textContent=sub.toUpperCase();
+      $('chapterHeading').textContent=`${sub} Chapters`;
+      const wrap = $('chapters');
+      wrap.innerHTML='';
+      (Chapters[sub]||[]).forEach(ch=>{
+        const btn=document.createElement('button');
+        btn.className='chip';
+        btn.textContent=ch;
+        btn.onclick=()=>startTest(ch);
+        wrap.appendChild(btn);
+      });
+      goTo('chapterPage');
+    }
+
+    // ======= Test Engine =======
+    let qIndex=0; // active question index
+    let answers=[]; // user choices: index or null
+
+    function startTest(chapter){
+      currentChapter=chapter;
+      const set = (Questions[currentSubject]||{})[chapter] || [];
+      if(set.length===0){ alert('Questions not added yet for this chapter.'); return; }
+      qIndex=0; answers = new Array(set.length).fill(null);
+      timer=600; startedAt=Date.now();
+      renderDots();
+      renderQuestion();
+      updateProgress();
+      startTimer();
+      goTo('testPage');
+    }
+
+    function renderQuestion(){
+      const set = Questions[currentSubject][currentChapter];
+      const data = set[qIndex];
+      const card = $('qCard');
+      const qNum=qIndex+1;
+      // Build options HTML with input+label pairs
+      let optsHtml = data.opts.map((text,i)=>{
+        const id=`q${qNum}_opt${i}`;
+        const checked = (answers[qIndex]===i) ? 'checked' : '';
+        return `
+          <div class="opt">
+            <input type="radio" id="${id}" name="q${qNum}" ${checked} onchange="selectOpt(${i})" />
+            <label for="${id}">${String.fromCharCode(65+i)}) ${text}</label>
+          </div>`;
+      }).join('');
+
+      card.innerHTML = `
+        <div class="q-head">
+          <span class="badge">Q${qNum}/${Questions[currentSubject][currentChapter].length}</span>
+          <div class="q-text">${data.q}</div>
+        </div>
+        <div class="options">${optsHtml}</div>
+      `;
+
+      // Update dots active state
+      updateDots();
+    }
+
+    function selectOpt(i){ answers[qIndex]=i; updateDots(); }
+
+    function saveAndNext(){ if(qIndex < Questions[currentSubject][currentChapter].length-1){ qIndex++; renderQuestion(); updateProgress(); } }
+    function prevQ(){ if(qIndex>0){ qIndex--; renderQuestion(); updateProgress(); } }
+
+    function updateProgress(){
+      const total = Questions[currentSubject][currentChapter].length;
+      const pct = ((qIndex)/Math.max(1,total))*100;
+      $('progressFill').style.width = pct + '%';
+    }
+
+    // Dots
+    function renderDots(){
+      const wrap=$('qDots');
+      const total = Questions[currentSubject][currentChapter].length;
+      wrap.innerHTML='';
+      for(let i=0;i<total;i++){
+        const d=document.createElement('button');
+        d.type='button';
+        d.className='dot';
+        d.textContent=i+1;
+        d.onclick=()=>{qIndex=i;renderQuestion();updateProgress();};
+        wrap.appendChild(d);
+      }
+    }
+    function updateDots(){
+      const dots=[...document.querySelectorAll('#qDots .dot')];
+      dots.forEach((el,i)=>{
+        el.classList.toggle('active', i===qIndex);
+        el.classList.toggle('answered', answers[i]!==null);
+      });
+    }
+
+    // Timer
+    function startTimer(){ clearInterval(tick); tick=setInterval(()=>{ timer--; drawTimer(); if(timer<=0){ clearInterval(tick); submitTest(); } },1000); drawTimer(); }
+    function drawTimer(){ const m=String(Math.floor(timer/60)).padStart(2,'0'); const s=String(timer%60).padStart(2,'0'); $('timer').textContent=`${m}:${s}`; }
+
+    function cancelTest(){ if(confirm('Cancel test and go back? Your current answers will be lost.')){ clearInterval(tick); goTo('chapterPage'); } }
+
+    // ======= Submit / Score / Leaderboard =======
+    function submitTest(){
+      clearInterval(tick);
+      const set = Questions[currentSubject][currentChapter];
+      let score=0;
+      set.forEach((q,i)=>{ if(answers[i]===null) return; if(answers[i]===q.ans) score+=4; else score-=1; });
+      const timeTakenSec = Math.max(0, Math.floor((Date.now()-startedAt)/1000));
+
+      // Persist to chapter-wise leaderboard in localStorage
+      const key = `rbjm_leaderboard_${currentSubject}_${currentChapter}`;
+      const board = JSON.parse(localStorage.getItem(key)||'[]');
+      board.push({ name: currentUser, score, time: timeTakenSec });
+      // Sort: higher score first; if tie, lower time first
+      board.sort((a,b)=> b.score-a.score || a.time-b.time );
+      localStorage.setItem(key, JSON.stringify(board));
+
+      // Find my rank
+      const myIndex = board.findIndex(x=>x.name===currentUser && x.time===timeTakenSec && x.score===score);
+      const myRank = myIndex>=0 ? myIndex+1 : '-';
+
+      // Render result
+      $('resultTitle').textContent = `${currentSubject} / ${currentChapter}`;
+      $('resultBadge').textContent = `SCORE: ${score}`;
+      $('rankLine').textContent = `Your Rank: ${myRank} out of ${board.length}`;
+
+      // Table
+      const tbody = $('leaderboardTbl').querySelector('tbody');
+      tbody.innerHTML='';
+      board.forEach((p,i)=>{
+        const tr=document.createElement('tr');
+        if(i===0) tr.innerHTML += `<td><span class="medal">🥇</span> ${i+1}</td>`;
+        else if(i===1) tr.innerHTML += `<td><span class="medal">🥈</span> ${i+1}</td>`;
+        else if(i===2) tr.innerHTML += `<td><span class="medal">🥉</span> ${i+1}</td>`;
+        else tr.innerHTML += `<td>${i+1}</td>`;
+        tr.innerHTML += `<td>${p.name}</td><td>${p.score}</td><td>${fmtTime(p.time)}</td>`;
+        if(i===myIndex) tr.classList.add('me');
+        tbody.appendChild(tr);
+      });
+
+      goTo('resultPage');
+    }
+
+    function fmtTime(s){ const m=String(Math.floor(s/60)).padStart(2,'0'); const r=String(s%60).padStart(2,'0'); return `${m}:${r}` }
+
+    function goBackToChapters(){ goTo('chapterPage'); }
+  </script>
+</body>
+</html>
